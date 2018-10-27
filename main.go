@@ -1,13 +1,15 @@
 package main
 
-// 																IMPORTS
+// 																1. IMPORTS
 
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
+	"net/http"
 )
 
-// 																TYPES
+// 																2. TYPES
 
 // Page : handles information about the page will be creating
 type Page struct {
@@ -15,16 +17,14 @@ type Page struct {
 	Body  []byte
 }
 
-// 																MAIN FUNCTION
+// 																3. MAIN FUNCTION
 
 func main() {
-	p1 := &Page{Title: "TestPage", Body: []byte("This is a sample Page.")}
-	p1.save()
-	p2, _ := loadPage("TestPage")
-	fmt.Println(string(p2.Body))
+	http.HandleFunc("/view/", viewHandler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-// 																PERSONAL DEFINED FUNCTIONS
+// 																4. PERSONAL DEFINED FUNCTIONS
 
 // Save() : creates a file with a custom name
 func (p *Page) save() error {
@@ -32,7 +32,7 @@ func (p *Page) save() error {
 	return ioutil.WriteFile(filename, p.Body, 0600)
 }
 
-// loadPage() :
+// loadPage() : loads page saved from save()
 func loadPage(title string) (*Page, error) {
 	filename := title + ".txt"
 	body, err := ioutil.ReadFile(filename)
@@ -40,4 +40,11 @@ func loadPage(title string) (*Page, error) {
 		return nil, err
 	}
 	return &Page{Title: title, Body: body}, nil
+}
+
+// viewHandler : extracts the page title and re-slices /view/ from the path
+func viewHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Path[len("/view/"):]
+	p, _ := loadPage(title)
+	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
 }
