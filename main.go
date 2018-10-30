@@ -50,12 +50,7 @@ var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
 // renderTemplate : creates a new template, parses the template definitions,
 // and applies the template to the data object (i.e. struct, interface, etc e.g. *Page)
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-	t, err := template.ParseFiles(tmpl + ".html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = t.Execute(w, p)
+	err := templates.ExecuteTemplate(w, tmpl+".html", p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
