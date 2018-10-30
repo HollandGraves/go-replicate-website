@@ -28,3 +28,10 @@ package main
 //
 // https://golang.org/pkg/html/template/#Template.Execute
 //
+//
+// 		REGEXP std pkg
+//
+// https://golang.org/pkg/regexp/#MustCompile
+//
+// https://golang.org/pkg/regexp/#Regexp.FindStringSubmatch
+//

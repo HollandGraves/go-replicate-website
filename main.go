@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 )
 
 // 																2. TYPES
@@ -92,3 +93,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
+
+// validPath : will make sure that the path that a user can type in is restricted,
+// so if they try to go to a different path the program will panic and exit
+var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
