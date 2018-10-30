@@ -3,6 +3,7 @@ package main
 // 																1. IMPORTS
 
 import (
+	"errors"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -57,10 +58,27 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	}
 }
 
+// validPath : will make sure that the path that a user can type in is restricted,
+// so if they try to go to a different path the program will panic and exit
+var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+
+// getTitle :
+func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
+	m := validPath.FindAllStringSubmatch(r.URL.Path)
+	if m == nil {
+		http.NotFound(w, r)
+		return "", errors.New("Invalid Page Title")
+	}
+	return m[2], nil // The title is the second subexpression
+}
+
 // viewHandler : extracts the page title from the path without /view/ from the path,
 // prints the Title and Boby of the file into some HTML, and displays that at the path
 func viewHandler(w http.ResponseWriter, r *http.Request) {
-	title := r.URL.Path[len("/view/"):]
+	title, err := getTitle(w, r)
+	if err != nil {
+		return
+	}
 	p, err := loadPage(title)
 	if err != nil {
 		// http.StatusFound = 302
@@ -73,7 +91,10 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 // editHandler : loads the page, and if it doesn't exist creates an empty Page struct,
 // and displays an HTML form
 func editHandler(w http.ResponseWriter, r *http.Request) {
-	title := r.URL.Path[len("/edit/"):]
+	title, err := getTitle(w, r)
+	if err != nil {
+		return
+	}
 	p, err := loadPage(title)
 	if err != nil {
 		p = &Page{Title: title}
@@ -83,17 +104,16 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 
 // saveHandler : saves the editing page and redirects to the view path
 func saveHandler(w http.ResponseWriter, r *http.Request) {
-	title := r.URL.Path[len("/save/"):]
+	title, err := getTitle(w, r)
+	if err != nil {
+		return
+	}
 	body := r.FormValue("body")
 	p := &Page{Title: title, Body: []byte(body)}
-	err := p.save()
+	err = p.save()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
-
-// validPath : will make sure that the path that a user can type in is restricted,
-// so if they try to go to a different path the program will panic and exit
-var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
