@@ -44,6 +44,9 @@ func loadPage(title string) (*Page, error) {
 	return &Page{Title: title, Body: body}, nil
 }
 
+// template caching. templates will panic if unable to ParseFiles()
+var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+
 // renderTemplate : creates a new template, parses the template definitions,
 // and applies the template to the data object (i.e. struct, interface, etc e.g. *Page)
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
@@ -82,6 +85,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "edit", p)
 }
 
+// saveHandler : saves the editing page and redirects to the view path
 func saveHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/save/"):]
 	body := r.FormValue("body")
