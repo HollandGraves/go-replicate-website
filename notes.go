@@ -73,6 +73,15 @@ package main
 //
 // 		ERRORS std pkg
 //
-//
+// pass a string argument to make you're own custom error response
 //
 // https://golang.org/pkg/errors/#example_New
+//
+//
+//
+//
+// 		GO PROGRAMMING LANGUAGE SPECIFICATION
+//
+// a bunch of specs on different aspects of Go
+//
+// https://golang.org/ref/spec
