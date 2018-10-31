@@ -64,7 +64,7 @@ var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
 
 // getTitle :
 func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
-	m := validPath.FindAllStringSubmatch(r.URL.Path)
+	m := validPath.FindStringSubmatch(r.URL.Path)
 	if m == nil {
 		http.NotFound(w, r)
 		return "", errors.New("Invalid Page Title")
