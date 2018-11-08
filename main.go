@@ -39,8 +39,8 @@ func (p *Page) save() error {
 
 // loadPage() : loads page from directory
 func loadPage(title string) (*Page, error) {
-	filename := title + ".txt"
-	body, err := ioutil.ReadFile("data/" + filename)
+	filename := "data/" + title + ".txt"
+	body, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
