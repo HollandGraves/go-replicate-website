@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 )
 
@@ -31,8 +32,9 @@ func main() {
 
 // Save() : creates a file with a custom name
 func (p *Page) save() error {
-	filename := p.Title + ".txt"
-	return ioutil.WriteFile("data/"+filename, p.Body, 0600)
+	os.Mkdir("data", 0700)
+	filename := "data/" + p.Title + ".txt"
+	return ioutil.WriteFile(filename, p.Body, 0600)
 }
 
 // loadPage() : loads page from directory
@@ -57,6 +59,7 @@ var templates = template.Must(template.ParseGlob("tmpl/*.html"))
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
 	if err != nil {
+		// http.StatusInternalServerError = 500
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -106,8 +109,10 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p := &Page{Title: title, Body: []byte(body)}
 	err := p.save()
 	if err != nil {
+		// http.StatusInternalServerError = 500
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	// http.StatusFound = 302
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
