@@ -27,18 +27,18 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-// 																4. PERSONAL DEFINED FUNCTIONS
+// 																4. PERSONALLY DEFINED FUNCTIONS
 
 // Save() : creates a file with a custom name
 func (p *Page) save() error {
 	filename := p.Title + ".txt"
-	return ioutil.WriteFile(filename, p.Body, 0600)
+	return ioutil.WriteFile("data/"+filename, p.Body, 0600)
 }
 
 // loadPage() : loads page from directory
 func loadPage(title string) (*Page, error) {
 	filename := title + ".txt"
-	body, err := ioutil.ReadFile(filename)
+	body, err := ioutil.ReadFile("data/" + filename)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,11 @@ func loadPage(title string) (*Page, error) {
 }
 
 // template caching. templates will panic if unable to ParseFiles()
-var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+// templates is global so it only has to cach once
+//
+// replaced template.ParseFiles("tmpl/edit.html", "tmpl/view.html") with
+// template.ParseGlob("tmpl/*.html") so as to grab every .html file in /tmpl/
+var templates = template.Must(template.ParseGlob("tmpl/*.html"))
 
 // renderTemplate : creates a new template, parses the template definitions,
 // and applies the template to the data object (i.e. struct, interface, etc e.g. *Page)
