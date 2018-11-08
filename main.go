@@ -22,6 +22,7 @@ type Page struct {
 // 																3. MAIN FUNCTION
 
 func main() {
+	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
@@ -79,6 +80,12 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 		}
 		fn(w, r, m[2])
 	}
+}
+
+// rootHandler : redirects the page to the root directory first
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	// http.StatusFound = 302
+	http.Redirect(w, r, "/view/FrontPage", http.StatusFound)
 }
 
 // viewHandler : extracts the page title from the path without /view/ from the path,
