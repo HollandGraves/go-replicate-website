@@ -1,15 +1,11 @@
 package main
 
-// 																1. IMPORTS
-
 import (
 	"log"
 	"net/http"
 
 	"github.com/go-udemy-course-exercises/exercise-2/handler"
 )
-
-// 																3. MAIN FUNCTION
 
 func main() {
 	http.HandleFunc("/", handler.RootHandler)
