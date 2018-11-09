@@ -84,8 +84,10 @@ func ViewHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := LoadPage(title)
 	if err != nil {
 		fmt.Println("Error:", err)
-		// http.StatusFound = 302
-		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
+		// http.StatusNotFound = 404
+		http.Error(w, err.Error(), http.StatusNotFound)
+		// if I want to potentiall redirect to a different page e.g. custom 404 page
+		// http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 		return
 	}
 	RenderTemplate(w, "view", p)
@@ -97,7 +99,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := LoadPage(title)
 	if err != nil {
 		fmt.Println("Error:", err)
-		p = &Page{Title: title}
+		// p = &Page{Title: title}
 	}
 	RenderTemplate(w, "edit", p)
 }
